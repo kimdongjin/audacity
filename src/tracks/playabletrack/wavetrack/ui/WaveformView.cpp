@@ -903,6 +903,16 @@ void DrawClipWaveform(TrackPanelDrawingContext &context,
       TrackArt::DrawNegativeOffsetTrackArrows( context, rect );
    }
    params.DrawClipEdges( dc, rect );
+
+   //
+   // draw phoneme-split lines by djkim 2020.03.20
+   //
+   dc.SetPen(*wxRED_PEN);
+   for(int i = 0; i < track->mSplitTimes.size(); i++) {
+       int xSplit = std::max(0, (int)(zoomInfo.TimeToPosition(track->mSplitTimes[i], hiddenMid.x)));
+       AColor::Line(dc, xSplit, 0, xSplit, rect.height);
+       printf("xSplitPos: %d\n", xSplit);
+   }
 }
 
 void DrawTimeSlider( TrackPanelDrawingContext &context,

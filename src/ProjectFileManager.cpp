@@ -13,6 +13,7 @@ Paul Licameli split from AudacityProject.cpp
 #include "Experimental.h"
 
 #include <wx/crt.h> // for wxPrintf
+#include <fstream>
 
 #if defined(__WXGTK__)
 #include <wx/evtloop.h>
@@ -1537,6 +1538,35 @@ ProjectFileManager::AddImportedTracks(const FilePath &fileName,
          .any_of( []( decltype(*results.begin()) &pTrack )
             { return pTrack->IsLeader(); } );
 
+#if 1 // by djkim
+   // The begining of th codes inserted by djkim 2020.03.20
+   // 
+   // Here, splitting times are loaded from the file which filename is *.decay.djs.splitting_times for *.wav.
+   //
+   //
+
+   wxString splitTimesFileName = fileName.BeforeLast('.') + ".decay.djs.split_times";
+
+   //printf("file name: %s\n", static_cast<const char*>(splitTimesFileName.c_str()));
+
+   std::ifstream    fSplitTimes;
+   int              splitTimeAtMsec;
+   float            splitPossibility;
+   std::vector<float>   splitTimesInSec;
+   std::vector<float>::iterator splitTimeIt;
+
+   fSplitTimes.open(splitTimesFileName.c_str());
+
+   if(fSplitTimes.is_open()) {
+       while(fSplitTimes >> splitTimeAtMsec >> splitPossibility) {
+           //std::cout << splitTimeAtMsec << ", " << splitPossibility << std::endl;
+           splitTimesInSec.push_back(float(splitTimeAtMsec) * 0.001);
+       }
+       fSplitTimes.close();
+   }
+   // The end of codes inserted by djkim 2020.03.20
+#endif
+
    for (const auto &newTrack : results) {
       if ( newTrack->IsLeader() )
          // Count groups only
@@ -1564,6 +1594,19 @@ ProjectFileManager::AddImportedTracks(const FilePath &fileName,
                   SetImportedDependencies( true );
             }
          }
+
+#if 1 
+         // by djkim
+         // 
+         //
+         // Here, a code which adds phoneme splitting time to a WaveTrack will be inserted.
+         //
+         //
+         for(splitTimeIt=splitTimesInSec.begin(); splitTimeIt != splitTimesInSec.end(); splitTimeIt++) {
+             wt->mSplitTimes.push_back(*splitTimeIt);
+             std::cout << "splitTime: " << *splitTimeIt << std::endl;
+         }
+#endif
       });
    }
 

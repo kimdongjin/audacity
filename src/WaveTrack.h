@@ -88,6 +88,11 @@ private:
    typedef WaveTrackLocation Location;
    using Holder = std::shared_ptr<WaveTrack>;
 
+   //
+   // the splitting times variable for phoneme segmentations by djkim 2020.03.20
+   //
+   std::vector<float> mSplitTimes;
+
    virtual ~WaveTrack();
 
    double GetOffset() const override;
