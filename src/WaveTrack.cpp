@@ -114,6 +114,9 @@ WaveTrack::WaveTrack(const std::shared_ptr<DirManager> &projDirManager, sampleFo
    mLastScaleType = -1;
    mLastdBRange = -1;
    mAutoSaveIdent = 0;
+
+   // For phoneme segmentations by djkim 2020.03.20
+   mSplitTimes.clear();
 }
 
 WaveTrack::WaveTrack(const WaveTrack &orig):
@@ -157,6 +160,7 @@ void WaveTrack::Init(const WaveTrack &orig)
    mSpectrumMin = orig.mSpectrumMin;
    mSpectrumMax = orig.mSpectrumMax;
    mDisplayLocationsCache.clear();
+   mSplitTimes.clear();
 }
 
 void WaveTrack::Reinit(const WaveTrack &orig)
